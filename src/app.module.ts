@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { configSchema } from '../config/config.schema';
 import { utilities, WinstonModule } from 'nest-winston';
+import { TelegramModule } from './telegram/telegram.module';
 import * as winston from 'winston';
 import * as process from 'node:process';
 
@@ -31,6 +32,7 @@ import * as process from 'node:process';
         }),
       ],
     }),
+    TelegramModule,
   ],
   controllers: [AppController],
   providers: [AppService],
