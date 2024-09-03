@@ -7,6 +7,7 @@ import { utilities, WinstonModule } from 'nest-winston';
 import { TelegramModule } from './telegram/telegram.module';
 import * as winston from 'winston';
 import * as process from 'node:process';
+import { PrismaModule } from './modules/prisma/prisma.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import * as process from 'node:process';
       ],
     }),
     TelegramModule,
+    PrismaModule,
   ],
   controllers: [AppController],
   providers: [AppService],
