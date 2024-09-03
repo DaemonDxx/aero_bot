@@ -5,7 +5,7 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { map, Observable } from 'rxjs';
-import { Template } from '../templates/template';
+import { Template } from '../../templates/template';
 import { Context } from 'telegraf';
 import { TelegrafExecutionContext } from 'nestjs-telegraf';
 
