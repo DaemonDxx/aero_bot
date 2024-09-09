@@ -32,11 +32,14 @@ export class UserService implements OnModuleInit {
 
   async getUser(chatID: bigint): Promise<User> {
     try {
+      this.logger.debug(`${chatID} - find user id by chat id`);
       const user = await this.prisma.tGUser.findUnique({
         where: {
           chatID,
         },
       });
+      this.logger.debug(`${chatID} - user ${user ? 'found' : 'not found'}`);
+      if (!user) return;
       return new User(user.userID, user.chatID);
     } catch (e) {
       throw new ServiceError(UserService.name, 'get user from db error', e);
@@ -45,16 +48,20 @@ export class UserService implements OnModuleInit {
 
   async getUserInfo(chatID: bigint): Promise<UserInfo> {
     try {
+      this.logger.debug(`${chatID} - find user by chat id`);
       const { userID } = await this.prisma.tGUser.findUniqueOrThrow({
         where: {
           chatID,
         },
       });
+      this.logger.debug(`${chatID} - user found`);
+      this.logger.debug(`${chatID} - grpc send get user info method`);
       return await firstValueFrom(
         this.pbUserService.getUserInfo({ userId: userID }),
       );
     } catch (e) {
       if (e instanceof PrismaClientKnownRequestError && e.code === 'P2025') {
+        this.logger.debug(`${chatID} - user not found`);
         throw new UserNotFoundError(chatID);
       }
       throw new ServiceError(UserService.name, `get user info error`, e);
