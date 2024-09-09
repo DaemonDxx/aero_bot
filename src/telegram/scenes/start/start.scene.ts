@@ -1,8 +1,10 @@
-import { Ctx, Start, Update } from 'nestjs-telegraf';
+import { Ctx, Hears, Start, Update } from 'nestjs-telegraf';
 import { LoggerService, UseInterceptors } from '@nestjs/common';
 import { TemplateInterceptor } from '../../templates/interceptors/template.interceptor';
 import { EntryTemplate } from '../../templates/scenes/start/entry.template';
+import { SceneContext } from 'telegraf/scenes';
 import { Logger } from '../../../utils/decorators/inject-logger.decorator';
+import { AUTH_SCENE_ID } from '../scenes-id.const';
 import { Context } from 'telegraf';
 
 @Update()
@@ -17,5 +19,10 @@ export class StartScene {
   async onStart(@Ctx() ctx: Context) {
     this.logger.log(`starting usage bot by chatID ${ctx.chat.id}`);
     return new EntryTemplate();
+  }
+
+  @Hears(EntryTemplate.ENTRY_BTN)
+  async onEntry(@Ctx() ctx: SceneContext) {
+    await ctx.scene.enter(AUTH_SCENE_ID);
   }
 }

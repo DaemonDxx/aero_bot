@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { session } from 'telegraf';
 import { scenesProviders } from './scenes/scenes.providers';
 import { ReplyService } from './reply.service';
+import { UserModule } from '../modules/user/user.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { ReplyService } from './reply.service';
         };
       },
       inject: [ConfigService],
-    })
+    }),
+    UserModule,
   ],
   providers: [...scenesProviders, ReplyService],
 })
