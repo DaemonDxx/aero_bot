@@ -6,7 +6,7 @@ export class ServiceError extends Error {
   constructor(service: string, message: string, reason?: Error) {
     super(`(${service}) - ${message}: ${reason ? reason.message : ''}`);
     this.service = service;
-    this.message = message;
     this.reason = reason;
+    this.stack = reason?.stack;
   }
 }
