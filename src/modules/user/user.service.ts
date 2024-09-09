@@ -13,6 +13,7 @@ import { ClientGrpc } from '@nestjs/microservices';
 import { ServiceError } from '../../utils/errors/service.error';
 import { firstValueFrom } from 'rxjs';
 import { User } from './entity/user.entity';
+import { AuthPayload } from './types';
 
 @Injectable()
 export class UserService implements OnModuleInit {
@@ -65,6 +66,43 @@ export class UserService implements OnModuleInit {
         throw new UserNotFoundError(chatID);
       }
       throw new ServiceError(UserService.name, `get user info error`, e);
+    }
+  }
+
+  async updatePasswords(chatID: bigint, payload: AuthPayload): Promise<void> {
+    const user = await this.getUser(chatID);
+    if (!user) throw new UserNotFoundError(chatID);
+
+    try {
+      this.logger.debug(`${chatID} - grpc send update accord method`);
+      await firstValueFrom(
+        this.pbUserService.updateAccord({
+          userId: user.id,
+          login: payload.accordLogin,
+          password: payload.accordPassword,
+        }),
+      );
+      this.logger.debug(`${chatID} - update accord password successfully`);
+    } catch (e) {
+      throw new ServiceError(
+        UserService.name,
+        `update accord password error`,
+        e,
+      );
+    }
+
+    try {
+      this.logger.debug(`${chatID} - grpc send update lks method`);
+      await firstValueFrom(
+        this.pbUserService.updateLks({
+          userId: user.id,
+          login: payload.lksLogin,
+          password: payload.lksPassword,
+        }),
+      );
+      this.logger.debug(`${chatID} - update lks password successfully`);
+    } catch (e) {
+      throw new ServiceError(UserService.name, `update lks password error`, e);
     }
   }
 }
