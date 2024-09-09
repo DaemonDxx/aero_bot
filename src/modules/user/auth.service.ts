@@ -14,6 +14,7 @@ import { ServiceError } from '../../utils/errors/service.error';
 import { AuthServiceClient, AuthSystem } from '../../../gen/auth.v1';
 import { AuthError } from './errors/auth.error';
 import { AuthPayload } from './types';
+import { Long } from '@grpc/proto-loader';
 
 @Injectable()
 export class AuthService implements OnModuleInit {
@@ -45,13 +46,18 @@ export class AuthService implements OnModuleInit {
     }
 
     try {
+      this.logger.debug(`${chatID} - send grpc auth method...`);
       const res = await firstValueFrom(this.pbAuthService.auth(payload));
+      this.logger.debug(`${chatID} - grpc auth method successful`);
+
+      this.logger.debug(`${chatID} - create user in db...`);
       const { userID } = await this.prisma.tGUser.create({
         data: {
           chatID,
-          userID: res.user.id,
+          userID: (res.user.id as unknown as Long).toNumber(),
         },
       });
+      this.logger.debug(`${chatID} - create user successfully`);
       return new User(userID, chatID);
     } catch (e) {
       throw new ServiceError(
@@ -65,12 +71,16 @@ export class AuthService implements OnModuleInit {
   async check(payload: AuthPayload) {
     let system: AuthSystem;
     try {
+      this.logger.debug(`${payload.accordLogin} - grpc check auth payload...`);
       const { details } = await firstValueFrom(
         this.pbAuthService.check(payload),
       );
+      this.logger.debug(
+        `${payload.accordLogin} - grpc check payload successfully. Result - ${details.system}`,
+      );
       system = details.system;
-    } catch (e: any) {
-      this.logger.error(e);
+    } catch (e) {
+      throw new ServiceError(AuthService.name, `check failed: ${e.message}`, e);
     }
 
     switch (system) {
