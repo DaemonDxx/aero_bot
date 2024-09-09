@@ -1,8 +1,12 @@
-import { Markup } from 'telegraf/typings/markup';
 import { Template } from './template';
 
 export class TextTemplate extends Template {
-  constructor(private readonly message: string) {
+  constructor(
+    private readonly message: string,
+    private readonly options?: {
+      clearKeyboard: boolean;
+    },
+  ) {
     super();
   }
 
@@ -10,7 +14,11 @@ export class TextTemplate extends Template {
     return this.message;
   }
 
-  getMarkup(): Markup<any> {
-    return;
+  getMarkup(): any {
+    if (this.options?.clearKeyboard) {
+      return { reply_markup: { remove_keyboard: true } };
+    } else {
+      return;
+    }
   }
 }
