@@ -6,6 +6,7 @@ import { scenesProviders } from './scenes/scenes.providers';
 import { ReplyService } from './reply.service';
 import { UserModule } from '../modules/user/user.module';
 import { Postgres } from '@telegraf/session/pg';
+import { OrderModule } from '../modules/order/order.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { Postgres } from '@telegraf/session/pg';
       inject: [ConfigService],
     }),
     UserModule,
+    OrderModule,
   ],
   providers: [...scenesProviders, ReplyService],
 })
