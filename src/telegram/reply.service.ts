@@ -34,7 +34,10 @@ export class ReplyService {
         msg.message_id,
         '',
         template.getMessageText(),
-        template.getMarkup(),
+        {
+          ...template.getMarkup(),
+          parse_mode: 'HTML',
+        },
       );
     } catch (e) {
       throw new ServiceError(
