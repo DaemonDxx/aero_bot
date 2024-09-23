@@ -8,4 +8,6 @@ export const configSchema = Joi.object({
   BOT_PG_SESSION_USER: Joi.string().required(),
   BOT_PG_SESSION_PASSWORD: Joi.string().required(),
   BOT_PG_SESSION_DB: Joi.string().required(),
+  KAFKA_BROKER: Joi.string().uri().required(),
+  KAFKA_TOPIC: Joi.string(),
 });

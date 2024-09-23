@@ -32,7 +32,7 @@ export class OrderService implements OnModuleInit {
   async getActualOrder(chatID: bigint): Promise<Order> {
     try {
       this.logger.debug(`try get actual order...`);
-      const user = await this.userService.getUser(chatID);
+      const user = await this.userService.getUserByChatID(chatID);
       //todo вынести извлечение user в interceptors
       if (!user) return;
 

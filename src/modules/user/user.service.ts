@@ -31,7 +31,7 @@ export class UserService implements OnModuleInit {
     this.pbUserService = this.client.getService('UserService');
   }
 
-  async getUser(chatID: bigint): Promise<User> {
+  async getUserByChatID(chatID: bigint): Promise<User> {
     try {
       this.logger.debug(`${chatID} - find user id by chat id`);
       const user = await this.prisma.tGUser.findUnique({
@@ -44,6 +44,24 @@ export class UserService implements OnModuleInit {
       return new User(user.userID, user.chatID);
     } catch (e) {
       throw new ServiceError(UserService.name, 'get user from db error', e);
+    }
+  }
+
+  async getUsersByUserID(userID: number): Promise<number[]> {
+    try {
+      const tgID = await this.prisma.tGUser.findMany({
+        where: { userID },
+        select: {
+          chatID: true,
+        },
+      });
+      return tgID.map((u) => Number(u.chatID));
+    } catch (e) {
+      throw new ServiceError(
+        UserService.name,
+        'get users by user id from db error',
+        e,
+      );
     }
   }
 
@@ -70,7 +88,7 @@ export class UserService implements OnModuleInit {
   }
 
   async updatePasswords(chatID: bigint, payload: AuthPayload): Promise<void> {
-    const user = await this.getUser(chatID);
+    const user = await this.getUserByChatID(chatID);
     if (!user) throw new UserNotFoundError(chatID);
 
     try {
