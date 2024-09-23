@@ -35,7 +35,7 @@ export class AuthService implements OnModuleInit {
 
   async auth(chatID: bigint, payload: AuthPayload): Promise<User> {
     try {
-      const user = await this.userService.getUser(chatID);
+      const user = await this.userService.getUserByChatID(chatID);
       if (user) return user;
     } catch (e) {
       throw new ServiceError(
